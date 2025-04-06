@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一瞬 - 记录你的情绪瞬间</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css">
+    <style>
+        :root {
+            /* 默认主题 - 暖色调 */
+            --primary: #FF8370;
+            --primary-light: #FFEBE5;
+            --primary-dark: #E56350;
+            --text-primary: #4A4A4A;
+            --text-secondary: #888888;
+            --background: #FFFAF7;
+            --card: #FFFFFF;
+            --shadow: 0 2px 12px rgba(255, 126, 103, 0.1);
+            --border-radius: 16px;
+            --splash-bg: rgba(255, 245, 240, 0.98);
+        }
+        
+        body.dark {
+            --primary: #FF9A8B;
+            --primary-light: #3A2E2C;
+            --primary-dark: #FF7E67;
+            --text-primary: #F1F1F1;
+            --text-secondary: #CCCCCC;
+            --background: #2A2222;
+            --card: #362E2B;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            --splash-bg: rgba(42, 34, 34, 0.98);
+        }
+        
+        body.theme-purple {
+            --primary: #8A7CEC;
+            --primary-light: #EEEAFC;
+            --primary-dark: #6A5ACD;
+        }
+        
+        body.dark.theme-purple {
+            --primary: #9D8FEF;
+            --primary-light: #312D50;
+            --primary-dark: #7B68EE;
+        }
+        
+        body.theme-green {
+            --primary: #6BD4AA;
+            --primary-light: #EEFAF4;
+            --primary-dark: #4CAF84;
+        }
+        
+        body.dark.theme-green {
+            --primary: #7BD1B2;
+            --primary-light: #2D4038;
+            --primary-dark: #5EC79E;
+        }
+        
+        body.theme-blue {
+            --primary: #70B3CA;
+            --primary-light: #EBF5F9;
+            --primary-dark: #5591A7;
+        }
+        
+        body.dark.theme-blue {
+            --primary: #85BCD0;
+            --primary-light: #2D3D43;
+            --primary-dark: #64A6BD;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'LXGW WenKai', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            align-items: center;
+        }
+        
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 540px;
+            padding: 0 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 1;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 现代化导航栏 */
+        .nav-bar {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+            width: 100%;
+            max-width: 540px;
+            background-color: var(--card);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+            padding: 0 20px;
+            margin-top: 8px;
+        }
+        
+        .nav-items {
+            display: flex;
+            width: 100%;
+            max-width: 320px;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .nav-item {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .nav-icon {
+            font-size: 30px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        /* 移除圆形指示器 */
+        .indicator {
+            display: none;
+        }
+        
+        /* 移除背景圆圈效果 */
+        .nav-item::after {
+            display: none;
+        }
+        
+        .nav-item.active::after {
+            display: none;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: var(--background);
+            border-radius: var(--border-radius);
+        }
+        
+        /* 加载动画 */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--splash-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .splash-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .splash-logo {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+        
+        .splash-tagline {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        
+        .splash-animation {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: var(--primary);
+            transform-origin: center;
+            opacity: 0;
+        }
+        
+        .circle-1 {
+            width: 18px;
+            height: 18px;
+            top: 31px;
+            left: 10px;
+            animation: circle-animation 2s infinite;
+            animation-delay: 0s;
+        }
+        
+        .circle-2 {
+            width: 24px;
+            height: 24px;
+            top: 28px;
+            left: 28px;
+            animation: circle-animation 2s infinite;
+            animation-delay: 0.2s;
+        }
+        
+        .circle-3 {
+            width: 16px;
+            height: 16px;
+            top: 20px;
+            left: 52px;
+            animation: circle-animation 2s infinite;
+            animation-delay: 0.4s;
+        }
+        
+        .circle-4 {
+            width: 12px;
+            height: 12px;
+            top: 44px;
+            left: 58px;
+            animation: circle-animation 2s infinite;
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes circle-animation {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            30% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            60% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .shine {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, var(--primary-light) 0%, transparent 70%);
+            opacity: 0;
+            animation: shine-animation 2s infinite;
+        }
+        
+        @keyframes shine-animation {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">一瞬</div>
+        <div class="splash-tagline">记录每一刻温柔的心情</div>
+        <div class="splash-animation">
+            <div class="shine"></div>
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+            <div class="circle circle-4"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page active" id="recordPage">
+            <iframe src="record.html" title="记录页"></iframe>
+        </div>
+        <div class="page" id="timelinePage">
+            <iframe src="timeline.html" title="时光页"></iframe>
+        </div>
+        <div class="page" id="profilePage">
+            <iframe src="profile.html" title="我的页"></iframe>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-items">
+            <div class="indicator" id="navIndicator"></div>
+            <div class="nav-item active" data-page="recordPage" data-index="0">
+                <div class="nav-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="nav-item" data-page="timelinePage" data-index="1">
+                <div class="nav-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="nav-item" data-page="profilePage" data-index="2">
+                <div class="nav-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.12104 17.8037C7.15267 16.6554 9.4998 16 12 16C14.5002 16 16.8473 16.6554 18.879 17.8037M15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10ZM21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取导航元素
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = document.querySelectorAll('.page');
+        const indicator = document.getElementById('navIndicator');
+        const splashScreen = document.getElementById('splashScreen');
+        
+        // 设置初始指示器位置
+        function setIndicatorPosition(index) {
+            const activeItem = document.querySelector(`.nav-item[data-index="${index}"]`);
+            if (activeItem) {
+                const rect = activeItem.getBoundingClientRect();
+                const navItemsRect = document.querySelector('.nav-items').getBoundingClientRect();
+                
+                // 计算相对于.nav-items的水平中心位置
+                const left = rect.left - navItemsRect.left + (rect.width - indicator.offsetWidth) / 2;
+                
+                indicator.style.transform = `translateX(${left}px)`;
+            }
+        }
+        
+        // 初始化指示器位置
+        setTimeout(() => {
+            setIndicatorPosition(0);
+        }, 100); // 短暂延迟以确保元素已完全渲染
+        
+        // 主题设置
+        function applyTheme(isDark, colorTheme = 'theme-warm') {
+            // 清除所有主题类
+            document.body.classList.remove('dark', 'theme-warm', 'theme-purple', 'theme-green', 'theme-blue');
+            
+            // 应用深色/浅色主题
+            if (isDark) {
+                document.body.classList.add('dark');
+            }
+            
+            // 应用颜色主题（除了暖色调，因为它是默认的）
+            if (colorTheme !== 'theme-warm') {
+                document.body.classList.add(colorTheme);
+            }
+            
+            // 向所有iframe传递主题信息
+            document.querySelectorAll('iframe').forEach(iframe => {
+                try {
+                    iframe.contentWindow.postMessage({
+                        type: 'themeChange',
+                        isDark: isDark,
+                        colorTheme: colorTheme
+                    }, '*');
+                } catch (e) {
+                    console.error('无法发送主题更改消息到iframe', e);
+                }
+            });
+        }
+        
+        // 检查存储的主题偏好
+        const savedTheme = localStorage.getItem('theme');
+        const savedColorTheme = localStorage.getItem('colorTheme') || 'theme-warm';
+        
+        if (savedTheme === 'dark') {
+            applyTheme(true, savedColorTheme);
+        } else {
+            applyTheme(false, savedColorTheme);
+        }
+        
+        // 监听iframe消息
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'themeToggle') {
+                const isDark = event.data.isDark;
+                const colorTheme = event.data.colorTheme || 'theme-warm';
+                
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('colorTheme', colorTheme);
+                
+                applyTheme(isDark, colorTheme);
+            }
+        });
+        
+        // 当窗口大小变化时更新指示器位置
+        window.addEventListener('resize', () => {
+            const activeNavItem = document.querySelector('.nav-item.active');
+            if (activeNavItem) {
+                const index = parseInt(activeNavItem.getAttribute('data-index'));
+                setIndicatorPosition(index);
+            }
+        });
+        
+        // 页面切换
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const pageId = item.getAttribute('data-page');
+                const index = parseInt(item.getAttribute('data-index'));
+                
+                // 设置指示器位置
+                setIndicatorPosition(index);
+                
+                // 激活选项卡
+                navItems.forEach(navItem => navItem.classList.remove('active'));
+                item.classList.add('active');
+                
+                // 显示页面
+                pages.forEach(page => {
+                    if (page.id === pageId) {
+                        page.classList.add('active');
+                    } else {
+                        page.classList.remove('active');
+                    }
+                });
+            });
+        });
+        
+        // 隐藏加载动画
+        setTimeout(() => {
+            splashScreen.classList.add('hide');
+        }, 2000);
+    </script>
+</body>
+</html> 

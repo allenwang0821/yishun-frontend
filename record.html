@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记录 - 一瞬</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css">
+    <style>
+        :root {
+            /* 默认主题 - 暖色调 */
+            --primary: #FF8370;
+            --primary-light: #FFEBE5;
+            --primary-dark: #E56350;
+            --text-primary: #4A4A4A;
+            --text-secondary: #888888;
+            --background: #FFFAF7;
+            --card: #FFFFFF;
+            --shadow: 0 2px 12px rgba(255, 126, 103, 0.1);
+            --border-radius: 16px;
+        }
+        
+        body.dark {
+            --primary: #FF9A8B;
+            --primary-light: #3A2E2C;
+            --primary-dark: #FF7E67;
+            --text-primary: #F1F1F1;
+            --text-secondary: #CCCCCC;
+            --background: #2A2222;
+            --card: #362E2B;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.theme-purple {
+            --primary: #8A7CEC;
+            --primary-light: #EEEAFC;
+            --primary-dark: #6A5ACD;
+        }
+        
+        body.dark.theme-purple {
+            --primary: #9D8FEF;
+            --primary-light: #312D50;
+            --primary-dark: #7B68EE;
+        }
+        
+        body.theme-green {
+            --primary: #6BD4AA;
+            --primary-light: #EEFAF4;
+            --primary-dark: #4CAF84;
+        }
+        
+        body.dark.theme-green {
+            --primary: #7BD1B2;
+            --primary-light: #2D4038;
+            --primary-dark: #5EC79E;
+        }
+        
+        body.theme-blue {
+            --primary: #70B3CA;
+            --primary-light: #EBF5F9;
+            --primary-dark: #5591A7;
+        }
+        
+        body.dark.theme-blue {
+            --primary: #85BCD0;
+            --primary-light: #2D3D43;
+            --primary-dark: #64A6BD;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'LXGW WenKai', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            padding: 16px;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        header {
+            padding: 8px 0;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .record-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+            padding-bottom: 10px;
+        }
+        
+        .mood-selector {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .mood-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            background-color: var(--background);
+            margin: 0 auto;
+        }
+        
+        .mood-item:hover, .mood-item.active {
+            background-color: var(--primary-light);
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(255, 126, 103, 0.2);
+        }
+        
+        .mood-emoji {
+            font-size: 22px;
+        }
+        
+        .record-input {
+            margin-bottom: 8px;
+        }
+        
+        .record-textarea {
+            height: 70px;
+            min-height: 70px;
+        }
+        
+        .photo-container {
+            position: relative;
+            margin-bottom: 8px;
+        }
+        
+        .photo-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            height: 70px;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .photo-preview {
+            max-height: 100px;
+        }
+        
+        .record-actions {
+            margin-top: 8px;
+        }
+        
+        .save-btn {
+            font-size: 16px;
+            padding: 10px 30px;
+        }
+        
+        .indicator-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            gap: 6px;
+        }
+        
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            background-color: var(--primary);
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        .time-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            background-color: var(--card);
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .time-icon {
+            font-size: 18px;
+        }
+        
+        .time-text {
+            flex: 1;
+        }
+        
+        .mood-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 10px;
+            justify-content: center;
+            padding: 12px;
+            background-color: var(--card);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 0;
+        }
+        
+        .input-container {
+            flex: 1;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+        }
+        
+        textarea {
+            width: 100%;
+            flex: 1;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid transparent;
+            background-color: var(--card);
+            resize: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            height: 80px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 126, 103, 0.2);
+        }
+        
+        .char-count {
+            display: none;
+        }
+        
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            height: 200px;
+            position: relative;
+        }
+        
+        .photo-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .photo-text {
+            font-size: 14px;
+        }
+        
+        #photoPreview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        #photoInput {
+            display: none;
+        }
+        
+        .photo-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: none;
+            z-index: 5;
+        }
+        
+        .photo-remove {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            border: none;
+        }
+        
+        .btn-save {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            margin-top: 10px;
+            width: 100%;
+            max-width: 400px;
+            font-weight: 500;
+        }
+        
+        .btn-save:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-save:active {
+            transform: scale(0.98);
+        }
+        
+        .feedback {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>一瞬</h1>
+    </header>
+    
+    <div class="record-container">
+        <div class="time-container">
+            <div class="time-icon">🕒</div>
+            <div class="time-text" id="currentTime"></div>
+        </div>
+        
+        <div class="mood-container">
+            <div class="mood-item" data-mood="happy">
+                <div class="mood-emoji">😄</div>
+            </div>
+            <div class="mood-item" data-mood="sad">
+                <div class="mood-emoji">😢</div>
+            </div>
+            <div class="mood-item" data-mood="angry">
+                <div class="mood-emoji">😡</div>
+            </div>
+            <div class="mood-item" data-mood="surprised">
+                <div class="mood-emoji">😲</div>
+            </div>
+            <div class="mood-item" data-mood="disappointed">
+                <div class="mood-emoji">😞</div>
+            </div>
+            <div class="mood-item" data-mood="tired">
+                <div class="mood-emoji">😩</div>
+            </div>
+            <div class="mood-item" data-mood="thinking">
+                <div class="mood-emoji">🤔</div>
+            </div>
+            <div class="mood-item" data-mood="laughing">
+                <div class="mood-emoji">😂</div>
+            </div>
+            <div class="mood-item" data-mood="empty">
+                <div class="mood-emoji">😶</div>
+            </div>
+            <div class="mood-item" data-mood="calm">
+                <div class="mood-emoji">😌</div>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <textarea id="recordText" placeholder="记录此刻的情绪...(最多100字)" maxlength="100"></textarea>
+            <div class="char-count"><span id="charCount">0</span>/100</div>
+        </div>
+        
+        <div class="photo-container">
+            <div class="photo-upload">
+                <div class="photo-placeholder" id="photoPlaceholder">
+                    <div class="photo-icon">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M3 9C3 7.89543 3.89543 7 5 7H5.5C6.12951 7 6.72229 6.70361 7.1 6.2L8.35 4.5C8.72771 3.99639 9.32049 3.7 9.95 3.7H14.05C14.6795 3.7 15.2723 3.99639 15.65 4.5L16.9 6.2C17.2777 6.70361 17.8705 7 18.5 7H19C20.1046 7 21 7.89543 21 9V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V9Z" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="photo-text">点击添加照片</div>
+                </div>
+                <img id="photoPreview" src="#" alt="预览图片" />
+                <input type="file" id="photoInput" accept="image/*" />
+                <div class="photo-controls">
+                    <button class="photo-remove" id="removePhoto">×</button>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn-save" id="saveRecord">保存记录</button>
+    </div>
+    
+    <div class="feedback" id="feedback">已保存</div>
+    
+    <script>
+        // 获取DOM元素
+        const currentTimeElement = document.getElementById('currentTime');
+        const moodItems = document.querySelectorAll('.mood-item');
+        const recordText = document.getElementById('recordText');
+        const charCount = document.getElementById('charCount');
+        const saveButton = document.getElementById('saveRecord');
+        const feedback = document.getElementById('feedback');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const removePhoto = document.getElementById('removePhoto');
+        const photoControls = document.querySelector('.photo-controls');
+        
+        // 当前选中的心情和照片数据
+        let selectedMood = null;
+        let photoData = null;
+        
+        // 心情对象
+        const moodEmojis = {
+            'happy': '😄', // 开心
+            'sad': '😢', // 伤心
+            'angry': '😡', // 生气
+            'surprised': '😲', // 惊讶
+            'disappointed': '😞', // 沮丧
+            'tired': '😩', // 疲惫
+            'thinking': '🤔', // 思考
+            'laughing': '😂', // 大笑
+            'empty': '😶', // 空白
+            'calm': '😌' // 平静
+        };
+        
+        // 显示当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit'
+            };
+            currentTimeElement.textContent = now.toLocaleDateString('zh-CN', options);
+        }
+        
+        // 初始化时显示当前时间
+        updateCurrentTime();
+        
+        // 每分钟更新一次时间
+        setInterval(updateCurrentTime, 60000);
+        
+        // 心情选择
+        moodItems.forEach(item => {
+            item.addEventListener('click', () => {
+                moodItems.forEach(mi => mi.classList.remove('active'));
+                item.classList.add('active');
+                selectedMood = item.getAttribute('data-mood');
+            });
+        });
+        
+        // 文本输入计数
+        recordText.addEventListener('input', () => {
+            charCount.textContent = recordText.value.length;
+            
+            // 添加提示当开始输入时
+            if (recordText.value.length > 0 && recordText.value.length === 1) {
+                showFeedback('最多输入100字');
+            }
+        });
+        
+        // 照片选择处理
+        photoPlaceholder.addEventListener('click', () => {
+            photoInput.click();
+        });
+        
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    photoData = e.target.result; // 保存base64格式的图片数据
+                    photoPreview.src = photoData;
+                    photoPreview.style.display = 'block';
+                    photoPlaceholder.style.display = 'none';
+                    photoControls.style.display = 'flex';
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 删除照片
+        removePhoto.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止点击事件传播
+            photoData = null;
+            photoPreview.src = '#';
+            photoPreview.style.display = 'none';
+            photoPlaceholder.style.display = 'flex';
+            photoControls.style.display = 'none';
+            photoInput.value = ''; // 清除输入，允许重新选择同一文件
+        });
+        
+        // 保存记录
+        saveButton.addEventListener('click', () => {
+            const text = recordText.value.trim();
+            if (text === '' && !photoData) {
+                showFeedback('请输入内容或添加照片');
+                return;
+            }
+            
+            const record = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                displayTime: currentTimeElement.textContent,
+                mood: selectedMood || 'neutral',
+                content: text,
+                photo: photoData, // 添加照片数据
+                isPinned: false
+            };
+            
+            // 从本地存储获取现有记录
+            let records = JSON.parse(localStorage.getItem('yishunRecords') || '[]');
+            
+            // 添加新记录
+            records.push(record);
+            
+            // 保存到本地存储
+            localStorage.setItem('yishunRecords', JSON.stringify(records));
+            
+            // 重置表单
+            recordText.value = '';
+            charCount.textContent = '0';
+            moodItems.forEach(mi => mi.classList.remove('active'));
+            selectedMood = null;
+            
+            // 清除照片
+            photoData = null;
+            photoPreview.src = '#';
+            photoPreview.style.display = 'none';
+            photoPlaceholder.style.display = 'flex';
+            photoControls.style.display = 'none';
+            photoInput.value = '';
+            
+            // 显示反馈
+            showFeedback('已保存');
+        });
+        
+        function showFeedback(message) {
+            feedback.textContent = message;
+            feedback.classList.add('show');
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 监听来自父页面的主题变更消息
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'themeChange') {
+                // 应用深色/浅色主题
+                if (event.data.isDark) {
+                    document.body.classList.add('dark');
+                } else {
+                    document.body.classList.remove('dark');
+                }
+                
+                // 应用颜色主题
+                document.body.classList.remove('theme-warm', 'theme-purple', 'theme-green', 'theme-blue');
+                const colorTheme = event.data.colorTheme || 'theme-warm';
+                if (colorTheme !== 'theme-warm') {
+                    document.body.classList.add(colorTheme);
+                }
+            }
+        });
+        
+        // 初始化检查主题
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时光 - 一瞬</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css">
+    <style>
+        :root {
+            /* 默认主题 - 暖色调 */
+            --primary: #FF8370;
+            --primary-light: #FFEBE5;
+            --primary-dark: #E56350;
+            --text-primary: #4A4A4A;
+            --text-secondary: #888888;
+            --background: #FFFAF7;
+            --card: #FFFFFF;
+            --shadow: 0 2px 12px rgba(255, 126, 103, 0.1);
+            --border-radius: 16px;
+            --delete-color: #FF5252;
+            --pin-color: #4CAF50;
+        }
+        
+        body.dark {
+            --primary: #FF9A8B;
+            --primary-light: #3A2E2C;
+            --primary-dark: #FF7E67;
+            --text-primary: #F1F1F1;
+            --text-secondary: #CCCCCC;
+            --background: #2A2222;
+            --card: #362E2B;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.theme-purple {
+            --primary: #8A7CEC;
+            --primary-light: #EEEAFC;
+            --primary-dark: #6A5ACD;
+        }
+        
+        body.dark.theme-purple {
+            --primary: #9D8FEF;
+            --primary-light: #312D50;
+            --primary-dark: #7B68EE;
+        }
+        
+        body.theme-green {
+            --primary: #6BD4AA;
+            --primary-light: #EEFAF4;
+            --primary-dark: #4CAF84;
+        }
+        
+        body.dark.theme-green {
+            --primary: #7BD1B2;
+            --primary-light: #2D4038;
+            --primary-dark: #5EC79E;
+        }
+        
+        body.theme-blue {
+            --primary: #70B3CA;
+            --primary-light: #EBF5F9;
+            --primary-dark: #5591A7;
+        }
+        
+        body.dark.theme-blue {
+            --primary: #85BCD0;
+            --primary-light: #2D3D43;
+            --primary-dark: #64A6BD;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'LXGW WenKai', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            padding: 16px;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        header {
+            padding: 12px 0;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .timeline-container {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 20px;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            color: var(--text-secondary);
+            gap: 15px;
+        }
+        
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        
+        .empty-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .empty-message {
+            font-size: 14px;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        
+        .timeline-item {
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards;
+            animation-delay: calc(var(--i) * 0.1s);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .record-card {
+            background-color: var(--card);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .record-card:active {
+            transform: scale(0.98);
+        }
+        
+        .record-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .record-mood {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .record-time {
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+        
+        .record-pin {
+            color: var(--pin-color);
+            font-size: 16px;
+            margin-left: 8px;
+        }
+        
+        .record-content {
+            font-size: 15px;
+            line-height: 1.5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        .record-photo {
+            margin-top: 12px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            height: auto;
+            max-height: 250px;
+        }
+        
+        .record-photo img {
+            width: 100%;
+            height: auto;
+            max-height: 250px;
+            object-fit: contain;
+            display: block;
+            background-color: var(--primary-light);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: var(--background);
+            border-radius: var(--border-radius);
+            width: 85%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 25px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-mood {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+        
+        .modal-time {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .modal-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .modal-photo {
+            width: 100%;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: var(--primary-light);
+        }
+        
+        .modal-photo img {
+            width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            display: block;
+        }
+        
+        .modal-close {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .btn-close {
+            background-color: var(--primary);
+            border: none;
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 10px 25px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-close:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-close:active {
+            transform: scale(0.98);
+        }
+        
+        .feedback {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+        }
+        
+        .indicator-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 8px;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            background-color: var(--primary);
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        /* 移除滑动相关的样式 */
+        .swipe-container,
+        .record-actions,
+        .action-btn,
+        .delete-btn,
+        .pin-btn {
+            display: none;
+        }
+        
+        /* 确认删除模态框 */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .confirm-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .confirm-content {
+            background-color: var(--card);
+            border-radius: var(--border-radius);
+            width: 85%;
+            max-width: 300px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .confirm-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        
+        .confirm-message {
+            font-size: 14px;
+            margin-bottom: 25px;
+            color: var(--text-secondary);
+        }
+        
+        .confirm-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .confirm-btn {
+            flex: 1;
+            padding: 10px 0;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .cancel-btn {
+            background-color: var(--background);
+            color: var(--text-primary);
+        }
+        
+        .delete-btn {
+            background-color: var(--delete-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>时光回顾</h1>
+    </header>
+    
+    <div class="timeline-container" id="timelineContainer">
+        <!-- 空状态展示 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📝</div>
+            <div class="empty-title">还没有记录</div>
+            <div class="empty-message">记录下你的第一个情绪瞬间，它将在这里展示</div>
+        </div>
+        
+        <!-- 记录列表将在这里动态生成 -->
+    </div>
+    
+    <!-- 记录详情模态框 -->
+    <div class="modal" id="recordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-mood" id="modalMood"></div>
+                <div class="modal-time" id="modalTime"></div>
+            </div>
+            <div class="modal-text" id="modalText"></div>
+            <div class="modal-close">
+                <button class="btn-close" id="modalClose">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="feedback" id="feedback"></div>
+    
+    <!-- 确认删除模态框 -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-content">
+            <div class="confirm-title">确认删除</div>
+            <div class="confirm-message">确定要删除这条记录吗？此操作不可恢复。</div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn cancel-btn" id="cancelDelete">取消</button>
+                <button class="confirm-btn delete-btn" id="confirmDelete">删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 获取DOM元素
+        const timelineContainer = document.getElementById('timelineContainer');
+        const emptyState = document.getElementById('emptyState');
+        const recordModal = document.getElementById('recordModal');
+        const modalMood = document.getElementById('modalMood');
+        const modalTime = document.getElementById('modalTime');
+        const modalText = document.getElementById('modalText');
+        const modalClose = document.getElementById('modalClose');
+        const feedback = document.getElementById('feedback');
+        const confirmModal = document.getElementById('confirmModal');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDelete = document.getElementById('confirmDelete');
+        
+        // 心情表情映射
+        const moodEmojis = {
+            'happy': '😄', // 开心
+            'sad': '😢', // 伤心
+            'angry': '😡', // 生气
+            'surprised': '😲', // 惊讶
+            'disappointed': '😞', // 沮丧
+            'tired': '😩', // 疲惫
+            'thinking': '🤔', // 思考
+            'laughing': '😂', // 大笑
+            'empty': '😶', // 空白
+            'calm': '😌', // 平静
+            'neutral': '😐' // 默认中性表情
+        };
+        
+        // 显示反馈信息
+        function showFeedback(message) {
+            feedback.textContent = message;
+            feedback.classList.add('show');
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 获取确认删除模态框元素
+        let recordToDelete = null;
+        
+        // 加载记录
+        function loadRecords() {
+            // 从localStorage获取记录
+            const records = JSON.parse(localStorage.getItem('yishunRecords') || '[]');
+            
+            if (records.length === 0) {
+                // 显示空状态
+                emptyState.style.display = 'flex';
+                return;
+            }
+            
+            // 隐藏空状态
+            emptyState.style.display = 'none';
+            
+            // 清空现有内容
+            timelineContainer.innerHTML = '';
+            
+            // 按时间倒序排序记录，并置顶特别标记的记录
+            records.sort((a, b) => {
+                if (a.isPinned && !b.isPinned) return -1;
+                if (!a.isPinned && b.isPinned) return 1;
+                return new Date(b.timestamp) - new Date(a.timestamp);
+            });
+            
+            // 创建记录时间线
+            records.forEach((record, index) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.classList.add('timeline-item');
+                timelineItem.style.setProperty('--i', index);
+                
+                const moodEmoji = moodEmojis[record.mood] || moodEmojis.neutral;
+                const pinIcon = record.isPinned ? '<div class="record-pin">📌</div>' : '';
+                
+                // 照片部分HTML
+                const photoHTML = record.photo ? `
+                    <div class="record-photo">
+                        <img src="${record.photo}" alt="记录照片">
+                    </div>
+                ` : '';
+                
+                timelineItem.innerHTML = `
+                    <div class="record-card" data-id="${record.id}">
+                        <div class="record-header">
+                            <div class="record-mood">${moodEmoji}</div>
+                            <div class="record-time">${record.displayTime}</div>
+                            ${pinIcon}
+                        </div>
+                        <div class="record-content">${record.content}</div>
+                        ${photoHTML}
+                    </div>
+                `;
+                
+                timelineContainer.appendChild(timelineItem);
+            });
+            
+            // 为每个记录卡片添加点击和长按事件
+            setupCardEvents();
+        }
+        
+        // 设置卡片点击和长按事件
+        function setupCardEvents() {
+            const cards = document.querySelectorAll('.record-card');
+            
+            cards.forEach(card => {
+                let pressTimer;
+                let isLongPress = false;
+                
+                // 点击显示详情
+                card.addEventListener('click', () => {
+                    if (!isLongPress) {
+                        const recordId = parseInt(card.getAttribute('data-id'));
+                        showRecordDetails(recordId);
+                    }
+                    isLongPress = false;
+                });
+                
+                // 长按事件 - 删除
+                card.addEventListener('touchstart', (e) => {
+                    pressTimer = setTimeout(() => {
+                        isLongPress = true;
+                        const recordId = parseInt(card.getAttribute('data-id'));
+                        recordToDelete = recordId;
+                        
+                        // 显示确认删除模态框
+                        confirmModal.classList.add('show');
+                        
+                        // 震动反馈（如果设备支持）
+                        if ('vibrate' in navigator) {
+                            navigator.vibrate(100);
+                        }
+                    }, 800); // 800毫秒长按
+                });
+                
+                card.addEventListener('touchend', () => {
+                    clearTimeout(pressTimer);
+                });
+                
+                card.addEventListener('touchmove', () => {
+                    clearTimeout(pressTimer);
+                });
+            });
+        }
+        
+        // 取消删除
+        cancelDelete.addEventListener('click', () => {
+            confirmModal.classList.remove('show');
+            recordToDelete = null;
+        });
+        
+        // 确认删除
+        confirmDelete.addEventListener('click', () => {
+            if (recordToDelete !== null) {
+                deleteRecord(recordToDelete);
+                confirmModal.classList.remove('show');
+                recordToDelete = null;
+            }
+        });
+        
+        // 点击模态框背景取消
+        confirmModal.addEventListener('click', (e) => {
+            if (e.target === confirmModal) {
+                confirmModal.classList.remove('show');
+                recordToDelete = null;
+            }
+        });
+        
+        // 删除记录
+        function deleteRecord(recordId) {
+            let records = JSON.parse(localStorage.getItem('yishunRecords') || '[]');
+            records = records.filter(record => record.id !== recordId);
+            localStorage.setItem('yishunRecords', JSON.stringify(records));
+            loadRecords();
+            showFeedback('已删除');
+        }
+        
+        // 显示记录详情
+        function showRecordDetails(recordId) {
+            const records = JSON.parse(localStorage.getItem('yishunRecords') || '[]');
+            const record = records.find(r => r.id === recordId);
+            
+            if (record) {
+                const moodEmoji = moodEmojis[record.mood] || moodEmojis.neutral;
+                
+                modalMood.textContent = moodEmoji;
+                modalTime.textContent = record.displayTime;
+                modalText.textContent = record.content;
+                
+                // 处理照片
+                const modalPhotoContainer = document.getElementById('modalPhoto');
+                if (record.photo) {
+                    if (!modalPhotoContainer) {
+                        const photoDiv = document.createElement('div');
+                        photoDiv.id = 'modalPhoto';
+                        photoDiv.className = 'modal-photo';
+                        photoDiv.innerHTML = `<img src="${record.photo}" alt="记录照片">`;
+                        
+                        // 插入到文本之后、关闭按钮之前
+                        modalText.insertAdjacentElement('afterend', photoDiv);
+                    } else {
+                        modalPhotoContainer.innerHTML = `<img src="${record.photo}" alt="记录照片">`;
+                        modalPhotoContainer.style.display = 'block';
+                    }
+                } else {
+                    if (modalPhotoContainer) {
+                        modalPhotoContainer.style.display = 'none';
+                    }
+                }
+                
+                recordModal.classList.add('show');
+            }
+        }
+        
+        // 关闭模态框
+        modalClose.addEventListener('click', () => {
+            recordModal.classList.remove('show');
+        });
+        
+        // 点击模态框背景关闭
+        recordModal.addEventListener('click', (e) => {
+            if (e.target === recordModal) {
+                recordModal.classList.remove('show');
+            }
+        });
+        
+        // 监听存储变化，实时更新显示
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'yishunRecords') {
+                loadRecords();
+            }
+        });
+        
+        // 初始加载记录
+        document.addEventListener('DOMContentLoaded', loadRecords);
+        
+        // 监听来自父页面的主题变更消息
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'themeChange') {
+                // 应用深色/浅色主题
+                if (event.data.isDark) {
+                    document.body.classList.add('dark');
+                } else {
+                    document.body.classList.remove('dark');
+                }
+                
+                // 应用颜色主题
+                document.body.classList.remove('theme-warm', 'theme-purple', 'theme-green', 'theme-blue');
+                const colorTheme = event.data.colorTheme || 'theme-warm';
+                if (colorTheme !== 'theme-warm') {
+                    document.body.classList.add(colorTheme);
+                }
+            }
+        });
+        
+        // 初始化检查主题
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+        }
+    </script>
+</body>
+</html> 

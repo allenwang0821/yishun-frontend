@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 - 一瞬</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css">
+    <style>
+        :root {
+            /* 默认主题 - 暖色调 */
+            --primary: #FF8370;
+            --primary-light: #FFEBE5;
+            --primary-dark: #E56350;
+            --text-primary: #4A4A4A;
+            --text-secondary: #888888;
+            --background: #FFFAF7;
+            --card: #FFFFFF;
+            --shadow: 0 2px 12px rgba(255, 126, 103, 0.1);
+            --border-radius: 16px;
+        }
+        
+        body.dark {
+            --primary: #FF9A8B;
+            --primary-light: #3A2E2C;
+            --primary-dark: #FF7E67;
+            --text-primary: #F1F1F1;
+            --text-secondary: #CCCCCC;
+            --background: #2A2222;
+            --card: #362E2B;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.theme-purple {
+            --primary: #8A7CEC;
+            --primary-light: #EEEAFC;
+            --primary-dark: #6A5ACD;
+        }
+        
+        body.dark.theme-purple {
+            --primary: #9D8FEF;
+            --primary-light: #312D50;
+            --primary-dark: #7B68EE;
+        }
+        
+        body.theme-green {
+            --primary: #6BD4AA;
+            --primary-light: #EEFAF4;
+            --primary-dark: #4CAF84;
+        }
+        
+        body.dark.theme-green {
+            --primary: #7BD1B2;
+            --primary-light: #2D4038;
+            --primary-dark: #5EC79E;
+        }
+        
+        body.theme-blue {
+            --primary: #70B3CA;
+            --primary-light: #EBF5F9;
+            --primary-dark: #5591A7;
+        }
+        
+        body.dark.theme-blue {
+            --primary: #85BCD0;
+            --primary-light: #2D3D43;
+            --primary-dark: #64A6BD;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'LXGW WenKai', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            padding: 16px;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        header {
+            padding: 12px 0;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 30px;
+        }
+        
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            color: white;
+        }
+        
+        .nickname {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .record-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .settings-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+            padding-left: 5px;
+        }
+        
+        .setting-item {
+            background-color: var(--card);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+        
+        .setting-item:active {
+            transform: scale(0.98);
+        }
+        
+        .setting-icon {
+            font-size: 22px;
+            margin-right: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+        }
+        
+        .setting-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .setting-content {
+            flex: 1;
+        }
+        
+        .setting-label {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .setting-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .setting-action {
+            display: flex;
+            align-items: center;
+        }
+        
+        .setting-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .setting-arrow svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .action-button {
+            color: var(--primary);
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .color-themes {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        
+        .color-theme {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .color-theme.active {
+            transform: scale(1.1);
+            border-color: var(--text-primary);
+        }
+        
+        .theme-warm-btn {
+            background: linear-gradient(135deg, #FF7E67, #FFE8E3);
+        }
+        
+        .theme-purple-btn {
+            background: linear-gradient(135deg, #7B68EE, #E6E6FA);
+        }
+        
+        .theme-green-btn {
+            background: linear-gradient(135deg, #5EC79E, #E8F7EF);
+        }
+        
+        .theme-blue-btn {
+            background: linear-gradient(135deg, #64A6BD, #E5F1F5);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: var(--background);
+            border-radius: var(--border-radius);
+            width: 85%;
+            max-width: 320px;
+            padding: 25px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            font-size: 16px;
+            background-color: var(--card);
+            color: var(--text-primary);
+        }
+        
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 126, 103, 0.2);
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn-cancel {
+            background-color: transparent;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-primary);
+        }
+        
+        .modal-btn-confirm {
+            background-color: var(--primary);
+            border: none;
+            color: white;
+        }
+        
+        .about-app {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .app-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .app-version {
+            margin-bottom: 10px;
+        }
+        
+        .feedback {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        
+        .feedback.show {
+            opacity: 1;
+        }
+        
+        .indicator-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 8px;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            background-color: var(--primary);
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>个人设置</h1>
+    </header>
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="avatar" id="userAvatar">👤</div>
+            <div class="nickname" id="userNickname">我</div>
+            <div class="record-count" id="recordCount">0 条记录</div>
+        </div>
+        
+        <div class="settings-section">
+            <div class="section-title">基本设置</div>
+            
+            <div class="setting-item" id="wxLoginItem">
+                <div class="setting-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 18.5454C19.7661 17.1663 21.5 14.5112 21.5 11.5C21.5 6.80558 17.6944 3 13 3C8.30558 3 4.5 6.80558 4.5 11.5C4.5 14.5112 6.23394 17.1663 9 18.5454M8.5 21.5C10.7454 20.0972 12 17.968 12 15.5833C12 12.3115 9.76142 9.66667 7 9.66667C4.23858 9.66667 2 12.3115 2 15.5833C2 17.968 3.25462 20.0972 5.5 21.5H8.5ZM18.5 21.5C20.7454 20.0972 22 17.968 22 15.5833C22 12.3115 19.7614 9.66667 17 9.66667C14.2386 9.66667 12 12.3115 12 15.5833C12 17.968 13.2546 20.0972 15.5 21.5H18.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="setting-content">
+                    <div class="setting-label">微信登录</div>
+                    <div class="setting-value" id="loginStatus">未登录</div>
+                </div>
+                <div class="setting-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.75 6C15.75 8.07107 14.0711 9.75 12 9.75C9.92893 9.75 8.25 8.07107 8.25 6C8.25 3.92893 9.92893 2.25 12 2.25C14.0711 2.25 15.75 3.92893 15.75 6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4.5 20.25C4.5 16.5302 7.53022 13.5 11.25 13.5H12.75C16.4698 13.5 19.5 16.5302 19.5 20.25C19.5 20.6642 19.1642 21 18.75 21H5.25C4.83579 21 4.5 20.6642 4.5 20.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="setting-content">
+                    <div class="setting-label">昵称</div>
+                    <div class="setting-value" id="nicknameValue">未设置</div>
+                </div>
+                <div class="setting-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 2V4M12 20V22M2 12H4M20 12H22M6 6L7.41421 7.41421M17.6569 17.6569L19.0711 19.0711M6 18L7.41421 16.5858M17.6569 6.34315L19.0711 4.92893" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="setting-content">
+                    <div class="setting-label">主题颜色</div>
+                    <div class="setting-value" id="themeValue">暖色调</div>
+                </div>
+                <div class="setting-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 3.5V2M14.5 3.5V2M9 22V20.5M14.5 22V20.5M19.5 9H21M19.5 14.5H21M3 9H4.5M3 14.5H4.5M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="setting-content">
+                    <div class="setting-label">亮暗模式</div>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <div class="section-title">数据管理</div>
+            
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 3.5V2M14.5 3.5V2M9 22V20.5M14.5 22V20.5M19.5 9H21M19.5 14.5H21M3 9H4.5M3 14.5H4.5M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="setting-content">
+                    <div class="setting-label">导出数据</div>
+                </div>
+                <div class="setting-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.5 11L14.5 16M14.5 11L9.5 16M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="setting-content">
+                    <div class="setting-label">清除数据</div>
+                </div>
+                <div class="setting-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <div class="about-app">
+            <div class="app-name">一瞬 Yishun</div>
+            <div class="app-version">版本 1.0.0</div>
+            <div>Made with ❤️</div>
+        </div>
+    </div>
+    
+    <!-- 微信登录模态框 -->
+    <div class="modal" id="wxLoginModal">
+        <div class="modal-content">
+            <div class="modal-title">微信登录</div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 200px; height: 200px; margin: 0 auto; background-color: var(--primary-light); display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                    <div style="color: var(--primary-dark); font-size: 14px;">微信二维码</div>
+                </div>
+                <p style="margin-top: 15px; color: var(--text-secondary); font-size: 14px;">请使用微信扫码登录</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="cancelWxLogin">取消</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 修改昵称模态框 -->
+    <div class="modal" id="nicknameModal">
+        <div class="modal-content">
+            <div class="modal-title">修改昵称</div>
+            <input type="text" class="modal-input" id="nicknameInput" placeholder="请输入新昵称" maxlength="10">
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="cancelNickname">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="confirmNickname">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 确认清空数据模态框 -->
+    <div class="modal" id="clearDataModal">
+        <div class="modal-content">
+            <div class="modal-title">确认清空所有数据？</div>
+            <p style="text-align: center; margin-bottom: 25px; color: var(--text-secondary);">此操作将永久删除所有记录，无法恢复</p>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="cancelClear">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="confirmClear">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="feedback" id="feedback"></div>
+    
+    <script>
+        // 获取DOM元素
+        const userAvatar = document.getElementById('userAvatar');
+        const userNickname = document.getElementById('userNickname');
+        const recordCount = document.getElementById('recordCount');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const feedback = document.getElementById('feedback');
+        
+        // 获取设置项元素 - 更新选择器
+        const settingItems = document.querySelectorAll('.setting-item');
+        const wxLoginItem = document.getElementById('wxLoginItem');
+        const nicknameItem = settingItems[1];
+        const themeColorItem = settingItems[2];
+        const darkModeItem = settingItems[3];
+        const exportDataItem = settingItems[4];
+        const clearDataItem = settingItems[5];
+        
+        // 显示反馈信息
+        function showFeedback(message) {
+            feedback.textContent = message;
+            feedback.classList.add('show');
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 加载用户信息和记录数
+        function loadUserInfo() {
+            // 加载昵称
+            const nickname = localStorage.getItem('yishunNickname') || '我';
+            userNickname.textContent = nickname;
+            document.getElementById('nicknameValue').textContent = nickname;
+            
+            // 更新头像显示第一个字
+            userAvatar.textContent = nickname.charAt(0);
+            
+            // 计算记录数
+            const records = JSON.parse(localStorage.getItem('yishunRecords') || '[]');
+            recordCount.textContent = `${records.length} 条记录`;
+        }
+        
+        // 主题名称映射
+        const themeNames = {
+            'theme-warm': '暖色调',
+            'theme-purple': '紫色调',
+            'theme-green': '绿色调',
+            'theme-blue': '蓝色调'
+        };
+        
+        // 绑定所有设置项的点击事件
+        function setupSettingItems() {
+            console.log('设置项：', wxLoginItem, nicknameItem, themeColorItem, exportDataItem, clearDataItem);
+            
+            // 确保元素存在
+            if (!wxLoginItem || !nicknameItem || !themeColorItem || !exportDataItem || !clearDataItem) {
+                console.error('某些设置项未找到');
+                showFeedback('设置项配置错误');
+                return;
+            }
+            
+            // 微信登录
+            const wxLoginModal = document.getElementById('wxLoginModal');
+            const cancelWxLogin = document.getElementById('cancelWxLogin');
+            
+            wxLoginItem.onclick = () => {
+                wxLoginModal.classList.add('show');
+                
+                // 模拟登录成功 (实际应用中这里应该是微信SDK的登录逻辑)
+                setTimeout(() => {
+                    const mockSuccessLogin = Math.random() > 0.3; // 70%概率登录成功
+                    
+                    if (mockSuccessLogin) {
+                        document.getElementById('loginStatus').textContent = '已登录';
+                        document.getElementById('userAvatar').innerHTML = '😊';
+                        // 保存登录状态
+                        localStorage.setItem('wxLoggedIn', 'true');
+                        showFeedback('微信登录成功');
+                    } else {
+                        showFeedback('登录失败，请重试');
+                    }
+                    
+                    wxLoginModal.classList.remove('show');
+                }, 3000);
+            };
+            
+            cancelWxLogin.onclick = () => {
+                wxLoginModal.classList.remove('show');
+            };
+            
+            // 点击模态框背景关闭
+            wxLoginModal.onclick = (e) => {
+                if (e.target === wxLoginModal) {
+                    wxLoginModal.classList.remove('show');
+                }
+            };
+            
+            // 昵称
+            nicknameItem.onclick = () => {
+                // 显示模态框让用户输入
+                const currentName = localStorage.getItem('yishunNickname') || '我';
+                
+                // 创建模态框
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
+                modal.innerHTML = `
+                    <div class="modal-content" style="transform: scale(1);">
+                        <div class="modal-title">修改昵称</div>
+                        <input type="text" class="modal-input" id="newNickname" placeholder="请输入新昵称" value="${currentName}" maxlength="10">
+                        <div class="modal-actions" style="display: flex; justify-content: space-between; gap: 10px; margin-top: 20px;">
+                            <button class="modal-btn" style="flex: 1; padding: 10px 0; background-color: var(--background); color: var(--text-primary); border: none; border-radius: var(--border-radius);">取消</button>
+                            <button class="modal-btn confirm-btn" style="flex: 1; padding: 10px 0; background-color: var(--primary); color: white; border: none; border-radius: var(--border-radius);">确定</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                // 输入框获取焦点
+                setTimeout(() => {
+                    const input = document.getElementById('newNickname');
+                    input.focus();
+                    input.select();
+                }, 100);
+                
+                // 取消按钮
+                const cancelBtn = modal.querySelector('.modal-btn');
+                cancelBtn.onclick = () => {
+                    modal.remove();
+                };
+                
+                // 确定按钮
+                const confirmBtn = modal.querySelector('.confirm-btn');
+                confirmBtn.onclick = () => {
+                    const input = document.getElementById('newNickname');
+                    const newName = input.value.trim();
+                    
+                    if (newName) {
+                        localStorage.setItem('yishunNickname', newName);
+                        userNickname.textContent = newName;
+                        document.getElementById('nicknameValue').textContent = newName;
+                        userAvatar.textContent = newName.charAt(0);
+                        showFeedback('昵称已更新');
+                    } else {
+                        showFeedback('昵称不能为空');
+                        return;
+                    }
+                    
+                    modal.remove();
+                };
+                
+                // 点击背景关闭
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                };
+                
+                // 按回车确认
+                const input = document.getElementById('newNickname');
+                input.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') {
+                        confirmBtn.click();
+                    }
+                });
+            };
+            
+            // 主题颜色选择
+            themeColorItem.onclick = () => {
+                showFeedback('选择主题颜色');
+                // 创建模态框
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
+                modal.innerHTML = `
+                    <div class="modal-content" style="transform: scale(1);">
+                        <div class="modal-title">选择主题颜色</div>
+                        <div class="theme-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div class="theme-option" data-theme="theme-warm">
+                                <div style="width: 100%; height: 80px; background-color: #FF8370; border-radius: 8px; margin-bottom: 8px;"></div>
+                                <div style="text-align: center;">暖色调</div>
+                            </div>
+                            <div class="theme-option" data-theme="theme-purple">
+                                <div style="width: 100%; height: 80px; background-color: #8A7CEC; border-radius: 8px; margin-bottom: 8px;"></div>
+                                <div style="text-align: center;">紫色调</div>
+                            </div>
+                            <div class="theme-option" data-theme="theme-green">
+                                <div style="width: 100%; height: 80px; background-color: #6BD4AA; border-radius: 8px; margin-bottom: 8px;"></div>
+                                <div style="text-align: center;">绿色调</div>
+                            </div>
+                            <div class="theme-option" data-theme="theme-blue">
+                                <div style="width: 100%; height: 80px; background-color: #70B3CA; border-radius: 8px; margin-bottom: 8px;"></div>
+                                <div style="text-align: center;">蓝色调</div>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="modal-btn modal-btn-confirm" style="width: 100%; background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer;">关闭</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                // 选择主题
+                const themeOptions = modal.querySelectorAll('.theme-option');
+                themeOptions.forEach(option => {
+                    option.style.cursor = 'pointer';
+                    option.onclick = () => {
+                        const themeName = option.getAttribute('data-theme');
+                        const themeValue = document.getElementById('themeValue');
+                        const isDark = darkModeToggle.checked;
+                        
+                        // 先高亮选中的主题
+                        themeOptions.forEach(opt => {
+                            opt.style.transform = 'scale(1)';
+                            opt.style.boxShadow = 'none';
+                        });
+                        option.style.transform = 'scale(1.05)';
+                        option.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                        
+                        themeValue.textContent = themeNames[themeName];
+                        localStorage.setItem('colorTheme', themeName);
+                        
+                        window.parent.postMessage({
+                            type: 'themeToggle',
+                            isDark: isDark,
+                            colorTheme: themeName
+                        }, '*');
+                        
+                        showFeedback(`已切换至${themeNames[themeName]}`);
+                    };
+                });
+                
+                // 关闭按钮
+                const closeBtn = modal.querySelector('.modal-btn-confirm');
+                closeBtn.onclick = () => {
+                    modal.remove();
+                };
+                
+                // 点击背景关闭
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                };
+            };
+            
+            // 获取亮暗模式切换区域
+            const darkModeItem = settingItems[3];
+            
+            // 亮暗模式切换 - 为整个区域添加点击事件
+            darkModeItem.onclick = (e) => {
+                // 避免直接点击复选框时触发两次
+                if (e.target === darkModeToggle) {
+                    return;
+                }
+                
+                darkModeToggle.checked = !darkModeToggle.checked;
+                const isDark = darkModeToggle.checked;
+                const colorTheme = localStorage.getItem('colorTheme') || 'theme-warm';
+                
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                
+                window.parent.postMessage({
+                    type: 'themeToggle',
+                    isDark: isDark,
+                    colorTheme: colorTheme
+                }, '*');
+                
+                showFeedback(isDark ? '已切换至深色模式' : '已切换至浅色模式');
+            };
+            
+            // 导出数据
+            exportDataItem.onclick = () => {
+                showFeedback('导出数据');
+                const records = JSON.parse(localStorage.getItem('yishunRecords') || '[]');
+                
+                if (records.length === 0) {
+                    showFeedback('没有可导出的数据');
+                    return;
+                }
+                
+                const dataStr = JSON.stringify(records, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                
+                const exportLink = document.createElement('a');
+                exportLink.setAttribute('href', dataUri);
+                exportLink.setAttribute('download', `一瞬_数据_${new Date().toLocaleDateString()}.json`);
+                document.body.appendChild(exportLink);
+                exportLink.click();
+                document.body.removeChild(exportLink);
+                
+                showFeedback('数据已导出');
+            };
+            
+            // 清空数据
+            clearDataItem.onclick = () => {
+                const records = JSON.parse(localStorage.getItem('yishunRecords') || '[]');
+                
+                if (records.length === 0) {
+                    showFeedback('没有可清空的数据');
+                    return;
+                }
+                
+                // 创建确认模态框
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
+                modal.innerHTML = `
+                    <div class="modal-content" style="transform: scale(1);">
+                        <div class="modal-title">确认清空所有数据</div>
+                        <p style="text-align: center; margin-bottom: 20px; color: var(--text-secondary);">此操作将永久删除所有记录，无法恢复</p>
+                        <div class="modal-actions" style="display: flex; justify-content: space-between; gap: 10px;">
+                            <button class="modal-btn" style="flex: 1; padding: 10px 0; background-color: var(--background); color: var(--text-primary); border: none; border-radius: var(--border-radius);">取消</button>
+                            <button class="modal-btn delete-btn" style="flex: 1; padding: 10px 0; background-color: #FF5252; color: white; border: none; border-radius: var(--border-radius);">删除</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                // 取消按钮
+                const cancelBtn = modal.querySelector('.modal-btn');
+                cancelBtn.onclick = () => {
+                    modal.remove();
+                };
+                
+                // 确认删除按钮
+                const deleteBtn = modal.querySelector('.delete-btn');
+                deleteBtn.onclick = () => {
+                    localStorage.removeItem('yishunRecords');
+                    loadUserInfo();
+                    showFeedback('所有数据已清空');
+                    modal.remove();
+                };
+                
+                // 点击背景关闭
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                };
+            };
+        }
+        
+        // 深色模式切换 - 只保留直接切换事件
+        darkModeToggle.addEventListener('change', () => {
+            const isDark = darkModeToggle.checked;
+            const colorTheme = localStorage.getItem('colorTheme') || 'theme-warm';
+            
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            window.parent.postMessage({
+                type: 'themeToggle',
+                isDark: isDark,
+                colorTheme: colorTheme
+            }, '*');
+            
+            showFeedback(isDark ? '已切换至深色模式' : '已切换至浅色模式');
+        });
+        
+        // 初始化时设置主题颜色文本
+        function initThemes() {
+            const savedColorTheme = localStorage.getItem('colorTheme') || 'theme-warm';
+            const themeValue = document.getElementById('themeValue');
+            themeValue.textContent = themeNames[savedColorTheme];
+            
+            const isDark = localStorage.getItem('theme') === 'dark';
+            darkModeToggle.checked = isDark;
+        }
+        
+        // 监听来自父页面的主题变更消息
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'themeChange') {
+                // 应用深色/浅色主题
+                if (event.data.isDark) {
+                    document.body.classList.add('dark');
+                    darkModeToggle.checked = true;
+                } else {
+                    document.body.classList.remove('dark');
+                    darkModeToggle.checked = false;
+                }
+                
+                // 应用颜色主题
+                document.body.classList.remove('theme-warm', 'theme-purple', 'theme-green', 'theme-blue');
+                const colorTheme = event.data.colorTheme || 'theme-warm';
+                
+                if (colorTheme !== 'theme-warm') {
+                    document.body.classList.add(colorTheme);
+                }
+                
+                document.getElementById('themeValue').textContent = themeNames[colorTheme];
+            }
+        });
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            initThemes();
+            setupSettingItems();
+            
+            // 检查微信登录状态
+            if (localStorage.getItem('wxLoggedIn') === 'true') {
+                document.getElementById('loginStatus').textContent = '已登录';
+                document.getElementById('userAvatar').innerHTML = '😊';
+            }
+            
+            // 调试消息
+            console.log('页面已加载完成');
+            showFeedback('设置页面已加载');
+        });
+        
+        // 监听存储变化
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'yishunRecords') {
+                loadUserInfo();
+            }
+        });
+    </script>
+</body>
+</html> 
